@@ -4,7 +4,40 @@
 <h2>My Profile</h2>
 <a href="{% url 'create_post' %}" class="btn btn-primary mb-3">Create New Post</a>
 
-<div class="glassmorphism row">
+<!-- Search & Filter Form -->
+<form method="GET" class="mt-3">
+    <div class="row">
+        <!-- Search Bar -->
+        <div class="col-md-4">
+            <input type="text" name="q" class="form-control" placeholder="Search posts..." value="{{ request.GET.q }}">
+        </div>
+
+        <!-- Date Sorting -->
+        <div class="col-md-2">
+            <select name="date_order" class="form-select">
+                <option value="newest" {% if request.GET.date_order == "newest" %}selected{% endif %}>Newest First</option>
+                <option value="oldest" {% if request.GET.date_order == "oldest" %}selected{% endif %}>Oldest First</option>
+            </select>
+        </div>
+
+        <!-- Media Type Filter -->
+        <div class="col-md-2">
+            <select name="media_type" class="form-select">
+                <option value="all" {% if request.GET.media_type == "all" %}selected{% endif %}>All</option>
+                <option value="text_only" {% if request.GET.media_type == "text_only" %}selected{% endif %}>Text Only</option>
+                <option value="images_only" {% if request.GET.media_type == "images_only" %}selected{% endif %}>Images Only</option>
+            </select>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Apply</button>
+        </div>
+    </div>
+</form>
+
+<!-- Posts List -->
+<div class="glassmorphism row mt-4">
     {% for post in posts %}
         <div class="col-md-8 mb-4">
             <div class="card">
@@ -17,7 +50,7 @@
                     <a href="{% url 'edit_post' post.pk %}" class="btn btn-warning">Edit</a>
                     <form action="{% url 'delete_post' post.pk %}" method="POST" class="d-inline">
                         {% csrf_token %}
-                        <a href= "{% url 'delete_post' post.pk %}" class="btn btn-danger">Delete</a>
+                        <a href="{% url 'delete_post' post.pk %}" class="btn btn-danger">Delete</a>
                     </form>
                 </div>
             </div>
@@ -25,5 +58,6 @@
     {% empty %}
         <p>You haven't created any posts yet.</p>
     {% endfor %}
-    </div>
+</div>
+
 {% endblock %}

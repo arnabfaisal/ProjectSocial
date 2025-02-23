@@ -3,12 +3,36 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Post
 from .forms import PostForm, UserRegisterForm
-# Create your views here.
+from django.db.models import Q
 
 def home(request):
-    posts = Post.objects.all().select_related('author').all()
-    return render(request, 'posts/home.html', {'posts': posts})
+    posts = Post.objects.all()
 
+    # Filtering
+    date_order = request.GET.get('date_order', 'newest')  # Default is newest first
+    media_type = request.GET.get('media_type', 'all')
+    user_filter = request.GET.get('user', '')
+
+    if date_order == 'oldest':
+        posts = posts.order_by('created_at')
+    else:
+        posts = posts.order_by('-created_at')
+
+    if media_type == 'text_only':
+        posts = posts.filter(image__isnull=True)
+    elif media_type == 'images_only':
+        posts = posts.filter(image__isnull=False)
+
+    if user_filter:
+        posts = posts.filter(author__username=user_filter)
+
+    # Searching
+    query = request.GET.get('q', '')
+    if query:
+        posts = posts.filter(Q(title__icontains=query) | Q(content__icontains=query))
+
+    context = {'posts': posts}
+    return render(request, 'posts/home.html', context)
 
 def register(request):
     if request.method == 'POST':
@@ -26,7 +50,28 @@ def register(request):
 @login_required
 def profile(request):
     posts = Post.objects.filter(author=request.user)
-    return render(request, 'posts/profile.html', {'posts': posts})
+
+    # Filtering
+    date_order = request.GET.get('date_order', 'newest')  # Default is newest first
+    media_type = request.GET.get('media_type', 'all')
+
+    if date_order == 'oldest':
+        posts = posts.order_by('created_at')
+    else:
+        posts = posts.order_by('-created_at')
+
+    if media_type == 'text_only':
+        posts = posts.filter(image__isnull=True)
+    elif media_type == 'images_only':
+        posts = posts.filter(image__isnull=False)
+
+    # Searching
+    query = request.GET.get('q', '')
+    if query:
+        posts = posts.filter(Q(title__icontains=query) | Q(content__icontains=query))
+
+    context = {'posts': posts}
+    return render(request, 'posts/profile.html', context)
 
 
 @login_required

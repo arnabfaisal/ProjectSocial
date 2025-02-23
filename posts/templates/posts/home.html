@@ -7,6 +7,44 @@
     <p class="text-center">A futuristic social media experience.</p>
 </div>
 
+<!-- Search & Filter Form -->
+<form method="GET" class="mt-3">
+    <div class="row">
+        <!-- Search Bar -->
+        <div class="col-md-4">
+            <input type="text" name="q" class="form-control" placeholder="Search posts..." value="{{ request.GET.q }}">
+        </div>
+
+        <!-- Date Sorting -->
+        <div class="col-md-2">
+            <select name="date_order" class="form-select">
+                <option value="newest" {% if request.GET.date_order == "newest" %}selected{% endif %}>Newest First</option>
+                <option value="oldest" {% if request.GET.date_order == "oldest" %}selected{% endif %}>Oldest First</option>
+            </select>
+        </div>
+
+        <!-- Media Type Filter -->
+        <div class="col-md-2">
+            <select name="media_type" class="form-select">
+                <option value="all" {% if request.GET.media_type == "all" %}selected{% endif %}>All</option>
+                <option value="text_only" {% if request.GET.media_type == "text_only" %}selected{% endif %}>Text Only</option>
+                <option value="images_only" {% if request.GET.media_type == "images_only" %}selected{% endif %}>Images Only</option>
+            </select>
+        </div>
+
+        <!-- User Filter -->
+        <div class="col-md-2">
+            <input type="text" name="user" class="form-control" placeholder="Filter by username" value="{{ request.GET.user }}">
+        </div>
+
+        <!-- Submit Button -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Apply</button>
+        </div>
+    </div>
+</form>
+
+<!-- Posts List -->
 <div class="mt-4">
     {% for post in posts %}
         <div class="glassmorphism p-3 mt-3">
@@ -21,6 +59,8 @@
                 <a href="{% url 'delete_post' post.pk %}" class="btn btn-danger btn-sm">Delete</a>
             {% endif %}
         </div>
+    {% empty %}
+        <p class="text-center">No posts found.</p>
     {% endfor %}
 </div>
 
