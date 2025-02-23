@@ -1,0 +1,16 @@
+
+*.pyc
+*~
+__pycache__
+myvenv
+venv
+.env
+.DS_Store
+db.sqlite3
+media/
+.vscode/
+*.pyo
+*.pyd
+.Python
+*.py[cod]
+*$py.class
